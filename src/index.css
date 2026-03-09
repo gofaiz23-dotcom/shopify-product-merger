@@ -1,0 +1,57 @@
+:root {
+  --bg-dark: #0d0d0d;
+  --bg-card: #161616;
+  --bg-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e8e6e3;
+  --text-muted: #9a9590;
+  --gold: #c9a227;
+  --gold-dim: #a68b20;
+  --gold-bright: #e5c84a;
+  --success: #2d8a5e;
+  --error: #c75c5c;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+[data-theme='light'] {
+  --bg-dark: #f5f4f1;
+  --bg-card: #ffffff;
+  --bg-elevated: #faf9f7;
+  --border: #e0ddd8;
+  --text: #1a1917;
+  --text-muted: #6b6560;
+  --gold: #a68b20;
+  --gold-dim: #8a741a;
+  --gold-bright: #c9a227;
+  --success: #1e6b47;
+  --error: #b54545;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-dark);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, select {
+  font-family: inherit;
+}

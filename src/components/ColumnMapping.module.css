@@ -1,0 +1,167 @@
+.wrap {
+  width: 100%;
+}
+
+.autoDetectToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.autoDetectToggle input {
+  cursor: pointer;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+}
+
+.autoDetect {
+  padding: 0.5rem 1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.autoDetect:hover {
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--gold-bright);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  overflow-y: visible;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  max-height: none;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.fieldLabel {
+  color: var(--text);
+  white-space: normal;
+  word-wrap: break-word;
+  min-width: 140px;
+}
+
+.selectWrap {
+  position: relative;
+  min-width: 220px;
+}
+
+.select {
+  width: 100%;
+  min-width: 220px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.select:hover {
+  border-color: var(--gold-dim);
+}
+
+.selectDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0.25rem 0 0 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.selectDropdown li button {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.selectDropdown li button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.selectDropdown li button.optSelected {
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--gold);
+}
+
+.optColName {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.optFileName {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.sample {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.categoryPreview {
+  display: block;
+  margin-top: 0.25rem;
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.85;
+  white-space: normal;
+  word-break: break-word;
+}
