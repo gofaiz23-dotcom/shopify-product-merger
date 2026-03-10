@@ -364,6 +364,13 @@
   gap: 0.75rem;
 }
 
+.exportBtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .exportBtn {
   padding: 0.75rem 1.5rem;
   background: var(--gold);
@@ -379,6 +386,26 @@
 }
 
 .exportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.exportBtnSecondary {
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.exportBtnSecondary:hover:not(:disabled) {
+  background: rgba(201, 162, 39, 0.12);
+  border-color: var(--gold);
+}
+
+.exportBtnSecondary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

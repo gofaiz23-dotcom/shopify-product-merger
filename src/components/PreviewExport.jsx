@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { mergeSheetsBySku } from '../lib/merge'
-import { exportShopifyCSV, exportToSampleFormat, normalizeStatus, getShipTypeForRow, getBasePriceMappingKey } from '../lib/exportShopify'
+import { exportShopifyCSV, exportToSampleFormat, normalizeStatus, getShipTypeForRow, getBasePriceMappingKey, isRowDisabled } from '../lib/exportShopify'
 import { detectCategory, isTaxonomyFormat } from '../lib/categoryMapper'
 import { SHOPIFY_CSV_HEADERS, FIELD_TO_SHOPIFY_HEADER } from '../lib/shopifyColumns'
 import { ColumnMapping } from './ColumnMapping'
@@ -94,6 +94,10 @@ export function PreviewExport({
     return SHOPIFY_CSV_HEADERS
   }, [sampleSheet])
 
+  const sampleH = sampleSheet?.headers
+  const enabledCount = editedRows.filter(r => !isRowDisabled(r, sampleH)).length
+  const disabledCount = editedRows.filter(r => isRowDisabled(r, sampleH)).length
+
   const getColWidth = useCallback((index) => {
     return colWidths[index] ?? DEFAULT_COL_WIDTH
   }, [colWidths])
@@ -159,14 +163,15 @@ export function PreviewExport({
     })
   }, [sampleSheet])
 
-  const handleExport = () => {
+  const doExport = (exportType) => {
     setExporting(true)
     setExportDone(false)
     try {
+      const opts = { exportType }
       if (sampleSheet?.headers?.length) {
-        exportToSampleFormat(editedRows, sampleSheet.headers, sampleSheet.fileName, autoDetectCategories, mapping, pricingConfig)
+        exportToSampleFormat(editedRows, sampleSheet.headers, sampleSheet.fileName, autoDetectCategories, mapping, pricingConfig, opts)
       } else {
-        exportShopifyCSV(editedRows, mapping, autoDetectCategories, pricingConfig)
+        exportShopifyCSV(editedRows, mapping, autoDetectCategories, pricingConfig, opts)
       }
       setExportDone(true)
     } finally {
@@ -182,13 +187,12 @@ export function PreviewExport({
   const getProductCategoryValue = (row, header) => {
     const key = getCellKey(header)
     const rawValue = (row[key] ?? '').trim()
-    const hasValidTaxonomy = rawValue && isTaxonomyFormat(rawValue)
-    if (hasValidTaxonomy) return rawValue
+    if (rawValue && isTaxonomyFormat(rawValue)) return rawValue
     if (autoDetectCategories) {
       const detected = detectCategory(row)
       return detected || ''
     }
-    return rawValue || ''
+    return ''
   }
 
   const getProductCategorySource = (row, header) => {
@@ -210,6 +214,18 @@ export function PreviewExport({
           <span className={styles.statValue}>{merged.length}</span>
           <span className={styles.statLabel}>Total products</span>
         </div>
+        {disabledCount > 0 && (
+          <>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{enabledCount}</span>
+              <span className={styles.statLabel}>Active</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{disabledCount}</span>
+              <span className={styles.statLabel}>Disabled</span>
+            </div>
+          </>
+        )}
         <div className={styles.stat}>
           <span className={styles.statValue}>{outputHeaders.length}</span>
           <span className={styles.statLabel}>Columns</span>
@@ -417,14 +433,36 @@ export function PreviewExport({
       )}
 
       <div className={styles.exportSection}>
-        <button
-          type="button"
-          className={styles.exportBtn}
-          onClick={handleExport}
-          disabled={exporting || merged.length === 0}
-        >
-          {exporting ? 'Exporting…' : `Download ${downloadFileName}`}
-        </button>
+        <div className={styles.exportBtns}>
+          <button
+            type="button"
+            className={styles.exportBtn}
+            onClick={() => doExport('active')}
+            disabled={exporting || enabledCount === 0}
+          >
+            {exporting ? 'Exporting…' : `Download active products (${enabledCount})`}
+          </button>
+          {disabledCount > 0 && (
+            <button
+              type="button"
+              className={styles.exportBtnSecondary}
+              onClick={() => doExport('disabled')}
+              disabled={exporting}
+            >
+              Download disabled products ({disabledCount})
+            </button>
+          )}
+          {disabledCount > 0 && (
+            <button
+              type="button"
+              className={styles.exportBtnSecondary}
+              onClick={() => doExport('both')}
+              disabled={exporting || merged.length === 0}
+            >
+              Download both sheets
+            </button>
+          )}
+        </div>
         {exportDone && (
           <p className={styles.success}>Download started. Check your downloads folder.</p>
         )}

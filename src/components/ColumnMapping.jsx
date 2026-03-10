@@ -126,16 +126,6 @@ export function ColumnMapping({
 
   return (
     <div className={styles.wrap}>
-      {onAutoDetectCategoriesChange != null && (
-        <label className={styles.autoDetectToggle}>
-          <input
-            type="checkbox"
-            checked={autoDetectCategories}
-            onChange={e => onAutoDetectCategoriesChange(e.target.checked)}
-          />
-          <span>Auto-detect Product Categories</span>
-        </label>
-      )}
       <div className={styles.toolbar}>
         <button type="button" className={styles.autoDetect} onClick={autoDetect}>
           Auto-detect again
@@ -153,7 +143,19 @@ export function ColumnMapping({
           <tbody>
             {targetFields.map(field => (
               <tr key={field.key}>
-                <td className={styles.fieldLabel}>{field.label}</td>
+                <td className={styles.fieldLabel}>
+                  <span>{field.label}</span>
+                  {onAutoDetectCategoriesChange != null && isProductCategoryField(field) && (
+                    <label className={styles.autoDetectInline}>
+                      <input
+                        type="checkbox"
+                        checked={autoDetectCategories}
+                        onChange={e => onAutoDetectCategoriesChange(e.target.checked)}
+                      />
+                      <span>Auto-detect when empty</span>
+                    </label>
+                  )}
+                </td>
                 <td>
                   <MapSelect
                     value={mapping[field.key] || ''}

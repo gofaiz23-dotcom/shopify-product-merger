@@ -78,6 +78,20 @@
   min-width: 140px;
 }
 
+.autoDetectInline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.autoDetectInline input {
+  cursor: pointer;
+}
+
 .selectWrap {
   position: relative;
   min-width: 220px;

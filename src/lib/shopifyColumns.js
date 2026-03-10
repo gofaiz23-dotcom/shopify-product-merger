@@ -102,18 +102,18 @@ export const FIELD_TO_SHOPIFY_HEADER = {
 export const SHOPIFY_FIELDS = [
   { key: 'title', label: 'Title', keywords: ['title', 'name', 'product name', 'item name', 'product title'] },
   { key: 'sku', label: 'SKU', keywords: ['sku', 'item code', 'product code', 'code'] },
-  { key: 'productCategory', label: 'Product category', keywords: ['product category', 'category', 'product_category', 'google category', 'fb category'] },
-  { key: 'price', label: 'Price', keywords: ['price', 'selling price', 'retail price', 'catalog_product_tier_price', 'catalog_product_tier_price.price'] },
-  { key: 'inventoryQuantity', label: 'Inventory quantity', keywords: ['inventory', 'quantity', 'qty', 'stock'] },
-  { key: 'imageUrl', label: 'Product image URL', keywords: ['image', 'image url', 'photo', 'picture', 'img'] },
+  { key: 'productCategory', label: 'Product category', keywords: ['product category', 'category', 'product_category', 'catalog_category_attribute.category', 'google category', 'fb category'] },
+  { key: 'price', label: 'Price', keywords: ['price', 'selling price', 'retail price', 'catalog_product_tier_price', 'catalog_product_tier_price.price', 'catalog_product_tier_price.catalog_product_tier_price.price'] },
+  { key: 'inventoryQuantity', label: 'Inventory quantity', keywords: ['inventory', 'quantity', 'qty', 'stock', 'la_qty'] },
+  { key: 'imageUrl', label: 'Product image URL', keywords: ['image', 'image url', 'photo', 'picture', 'img', 'images', 'media_gallery', 'media gallery'] },
   { key: 'description', label: 'Description', keywords: ['description', 'desc', 'details', 'body'] },
   { key: 'vendor', label: 'Vendor', keywords: ['vendor', 'brand', 'supplier'] },
   { key: 'tags', label: 'Tags', keywords: ['tags', 'tag', 'keywords'] },
   { key: 'barcode', label: 'Barcode', keywords: ['barcode', 'upc', 'ean'] },
   { key: 'compareAtPrice', label: 'Compare-at price', keywords: ['compare', 'mrp', 'was price', 'original price', 'compare at'] },
   { key: 'weightValue', label: 'Weight', keywords: ['weight', 'grams', 'kg'] },
-  { key: 'type', label: 'Type', keywords: ['type', 'product type'] },
-  { key: 'status', label: 'Status', keywords: ['status', 'published', 'active'] },
+  { key: 'type', label: 'Type', keywords: ['type', 'product type', 'package_type', 'package type'] },
+  { key: 'status', label: 'Status', keywords: ['status', 'published', 'active', 'catalog_product_attribute.status'] },
   { key: 'seoTitle', label: 'SEO title', keywords: ['seo title', 'meta title'] },
   { key: 'seoDescription', label: 'SEO description', keywords: ['seo description', 'meta description'] },
   { key: 'option1Name', label: 'Option1 name', keywords: ['option1 name', 'option 1 name'] },
@@ -137,14 +137,41 @@ function normalize(s) {
   return (s || '').toLowerCase().replace(/[\s_-]+/g, ' ').trim()
 }
 
+function normalizeForColumn(s) {
+  return (s || '').toLowerCase().replace(/[\s_.-]+/g, '').trim()
+}
+
+// Sample headers that should match the same columns as Title (product name)
+const TITLE_ALIASES = ['url handle', 'handle', 'title', 'name', 'product name']
+
+// Sample headers that should match catalog_category_attribute.category (Type, Tags, Product category)
+const CATEGORY_ALIASES = ['product category', 'type', 'tags', 'category', 'product_category']
+
 /**
  * Match a sample header to a data column. Returns true if they likely match.
  */
 export function headerMatchesColumn(sampleHeader, columnName) {
   const a = normalize(sampleHeader)
   const b = normalize(columnName)
+  const bCompact = normalizeForColumn(columnName)
   if (!a || !b) return false
   if (a === b) return true
+
+  // Title/URL handle/Handle: match catalog_product_attribute.name only (check before generic)
+  if (TITLE_ALIASES.includes(a)) {
+    if (b.includes('name') || bCompact.includes('name')) return true
+    return false
+  }
+  // Type/Tags/Product category: match catalog_category_attribute.category only (not package_type)
+  if (CATEGORY_ALIASES.includes(a)) {
+    if (b.includes('category') || bCompact.includes('category')) return true
+    return false
+  }
+  // Price: match .price but NOT .price group (reject columns that are price group)
+  if (a === 'price' || a === 'variant price') {
+    if (bCompact.includes('pricegroup') || bCompact.endsWith('group')) return false
+  }
+
   if (a.includes(b) || b.includes(a)) return true
   const fieldKey = detectShopifyField(columnName)
   if (!fieldKey) return false
